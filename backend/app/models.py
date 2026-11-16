@@ -1,4 +1,6 @@
-from sqlalchemy import String
+import enum
+from datetime import datetime, timezone
+from sqlalchemy import String, Enum, Float, DateTime
 from sqlalchemy.orm import Mapped, mapped_column
 
 from .db import Base
@@ -10,3 +12,23 @@ class Item(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(200))
     description: Mapped[str | None] = mapped_column(String(1000), default=None)
+
+
+# A class to define all three definite trip types
+class TripType(enum.Enum):
+    FACULTY = "Faculty Led"
+    EXCHANGE = "Exchange"
+    DIRECT = "Direct"
+
+# A class that defines the model for the 'trips' table
+class Trip(Base):
+    __tablename__ = "trips"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    name: Mapped[str] = mapped_column(String(1000))
+    trip_type: Mapped[TripType] = mapped_column(Enum(TripType))
+    location: Mapped[str] = mapped_column(String(1000))
+    start_date: Mapped[datetime] = mapped_column(DateTime)
+    end_date: Mapped[datetime] = mapped_column(DateTime)
+    cost: Mapped[float] = mapped_column(Float)
+
