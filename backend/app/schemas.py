@@ -4,17 +4,6 @@ from datetime import datetime
 from app.models import TripType
 
 
-class ItemCreate(BaseModel):
-    name: str
-    description: str | None = None
-
-
-class ItemRead(ItemCreate):
-    model_config = ConfigDict(from_attributes=True)
-
-    id: int
-
-
 class TripCreate(BaseModel):
     name: str
     trip_type: TripType
@@ -27,6 +16,7 @@ class TripCreate(BaseModel):
 class TripRead(TripCreate):
     model_config = ConfigDict(from_attributes=True)
 
+    archived: bool
     id: int
     
 
@@ -37,3 +27,4 @@ class TripUpdate(TripCreate):
     start_date: Optional[datetime] = None
     end_date: Optional[datetime] = None
     cost: Optional[float] = None
+    archived: Optional[bool] = False

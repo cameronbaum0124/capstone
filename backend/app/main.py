@@ -33,32 +33,16 @@ def health(db: Session = Depends(get_db)):
     return {"status": "ok"}
 
 
-@app.get("/api/items", response_model=list[schemas.ItemRead])
-def list_items(db: Session = Depends(get_db)):
-    return db.scalars(select(models.Item).order_by(models.Item.id)).all()
-
-
-@app.post("/api/items", response_model=schemas.ItemRead, status_code=201)
-def create_item(payload: schemas.ItemCreate, db: Session = Depends(get_db)):
-    item = models.Item(**payload.model_dump())
-    db.add(item)
-    db.commit()
-    return item
-
-
-@app.delete("/api/items/{item_id}", status_code=204)
-def delete_item(item_id: int, db: Session = Depends(get_db)):
-    item = db.get(models.Item, item_id)
-    if not item:
-        raise HTTPException(status_code=404, detail="Item not found")
-    db.delete(item)
-    db.commit()
-
-
 @app.get("/api/trips", response_model=list[schemas.TripRead])
 def list_trips(db: Session = Depends(get_db)):
     """ Gets all trips and their data """
     return db.scalars(select(models.Trip).order_by(models.Trip.id)).all()
+
+
+@app.get("/api/active-trips", response_model=list[schemas.TripRead])
+def list_active_trips(db: Session = Depends(get_db)):
+    """ Gets all trips and their data """
+    return db.scalars(select(models.Trip).where(models.Trip.archived==False).order_by(models.Trip.id)).all()
 
 
 @app.post("/api/trips", response_model=schemas.TripRead, status_code=201)
@@ -87,6 +71,8 @@ def update_trip(trip_id: int, new_trip: schemas.TripUpdate, db: Session = Depend
             trip.end_date = new_trip.end_date
         if new_trip.cost is not None:
             trip.cost = new_trip.cost
+        if new_trip.archived is not None:
+            trip.archived = new_trip.archived
         db.commit()
         return trip
     else:

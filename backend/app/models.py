@@ -1,18 +1,9 @@
 import enum
 from datetime import datetime, timezone
-from sqlalchemy import String, Enum, Float, DateTime
+from sqlalchemy import String, Enum, Float, DateTime, Boolean
 from sqlalchemy.orm import Mapped, mapped_column
 
 from .db import Base
-
-
-class Item(Base):
-    __tablename__ = "items"
-
-    id: Mapped[int] = mapped_column(primary_key=True)
-    name: Mapped[str] = mapped_column(String(200))
-    description: Mapped[str | None] = mapped_column(String(1000), default=None)
-
 
 # A class to define all three definite trip types
 class TripType(enum.Enum):
@@ -31,4 +22,5 @@ class Trip(Base):
     start_date: Mapped[datetime] = mapped_column(DateTime)
     end_date: Mapped[datetime] = mapped_column(DateTime)
     cost: Mapped[float] = mapped_column(Float)
+    archived: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
 
